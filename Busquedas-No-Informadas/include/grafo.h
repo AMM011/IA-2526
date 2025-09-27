@@ -73,8 +73,13 @@ class Grafo {
     const Nodo& GetNodoPorId(int id) const;
 
  private:
-  std::vector<Nodo> Nodos;   ///< Contiene todo los nodos
-  int num_vertices_;    ///< Contiene el número de vertices
-}
+  int num_vertices_;    ///< Contiene el número de vertices (1..N)
+
+  std::vector<Nodo> nodos_;   ///< Contiene todos los nodos (cada uno con su id y vecinos)
+
+  std::vector<std::vector<double>> pesos_;  ///< Matriz de presos (NxN): coste de la arista o -1 si no existe.
+
+  void VerificarVerticeOExcepcion(int u) const; ///< Verifica que u está en [1, num_vertices_], si no lanza excepción.
+};
 
 #endif  // GRAFO_H
