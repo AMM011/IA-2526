@@ -7,6 +7,7 @@
 #include <cstddef>
 #include <cstdint>
 #include <utility>
+#include <stdexcept>
 
 class Grafo {
  public:
@@ -58,7 +59,7 @@ class Grafo {
      * @param id Identificador del nodo (1-based).
      * @return Vector de pares (id, peso(costo)) de los vecinos del nodo.
      */
-    std::vector<std::pair<int, double>> GetVecinosPorId(int id) const;
+    const std::vector<std::pair<int, double>>& GetVecinosPorId(int id) const;
 
     /**
      * @brief Limpia todas las aristas del grafo.

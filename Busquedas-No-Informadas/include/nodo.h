@@ -3,6 +3,7 @@
 
 #include <vector>
 #include <utility>
+#include <stdexcept>
 
 /**
  * #brief Representa un nodo del grafo.

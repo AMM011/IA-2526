@@ -1,7 +1,4 @@
-#include "./include/nodo.h"
-
-#include <stdexcept>
-#include <utility>
+#include "nodo.h"
 
 // Utilizamos emplace_back porque como estoy creando el pair desde cero
 // con los arguemntos vecino_id y peso, emplace_bacl() es la opcion más eficiente.
@@ -17,7 +14,7 @@ void Nodo::AnadirVecino(int vecino_id, double peso) {
   //for (auto& vecino: vecinos_) {
   //  if (vecino.first == vecino_id) vecino.second = peso;
   //}
-  
+
   // Verificamos si el vecino existe o no
   if (!TieneVecino(vecino_id)) vecinos_.emplace_back(vecino_id, peso);
 }
