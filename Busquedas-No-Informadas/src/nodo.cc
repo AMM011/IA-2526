@@ -18,8 +18,12 @@ void Nodo::AnadirVecino(int vecino_id, double peso) {
     } 
   }
 
-  // Si no existe, lo añadimos y salimos
+  // Si no existe, lo añadimos
   vecinos_.emplace_back(vecino_id, peso);
+
+  // Ordenamos los vecinos, asi el grafo garantiza que siempre duvuelvan los vecinos ordenados 
+  // y BFS/DFS recorren en orden determinista (siempre se visitara los nodos en el mismo orden).
+  std::sort(vecinos_.begin(), vecinos_.end());
 }
 
 bool Nodo::TieneVecino(int vecino_id) const {
