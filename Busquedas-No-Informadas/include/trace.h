@@ -1,9 +1,6 @@
 #ifndef TRACE_H
 #define TRACE_H
 
-#include "grafo.h"
-#include "nodo.h"
-
 #include <vector>
 
 /**
@@ -48,8 +45,8 @@ struct ResultadoBusqueda {
   std::vector<int> camino;
   double coste_total = 0.0;
   std::vector<RegistroIteracion> traza;
-  size_t nodos_generados;
-  size_t nodos_inspeccionados;
+  size_t nodos_generados = 0;
+  size_t nodos_inspeccionados = 0;
 };
 
 /**
@@ -62,8 +59,8 @@ struct ResultadoBusqueda {
  *             - false = no ascendientes.
  */
 struct OpcionesBusqueda {
-  bool parar_a_primera_solución = false;
-  bool vecinos_ascendientes = false;
+  bool parar_a_primera_solución = true;
+  bool vecinos_ascendientes = true;
 };
 
 }
