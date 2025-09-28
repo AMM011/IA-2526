@@ -74,10 +74,14 @@ class Grafo {
 
  private:
   int num_vertices_;    ///< Contiene el número de vertices (1..N)
+  
+  // Recordar que los dos vectores estan en base 0, entonces
+  // si se quiere acceder al nodo mediante el identificador, 
+  // recordar que tenemos que restarle 1, porque los identificadores
+  // estan en base 1 y los vectores en base 0
+  std::vector<Nodo> nodos_;   ///< Contiene todos los nodos (en 0-based y cada uno con su id y vecinos)
 
-  std::vector<Nodo> nodos_;   ///< Contiene todos los nodos (cada uno con su id y vecinos)
-
-  std::vector<std::vector<double>> pesos_;  ///< Matriz de adyacencia ponderada (N = num_aristas)(NxN): coste de la arista o -1 si no existe.
+  std::vector<std::vector<double>> pesos_;  ///< (0-based) Matriz de adyacencia ponderada (N = num_aristas)(NxN): coste de la arista o -1 si no existe.
 
   void VerificarVerticeOExcepcion(int u) const; ///< Verifica que u está en [1, num_vertices_], si no lanza excepción.
 };
