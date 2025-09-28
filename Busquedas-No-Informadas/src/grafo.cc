@@ -10,7 +10,7 @@ Grafo::Grafo(int num_vertices) {
   // El guión dice: d(i,j) = -1 si no hay una arista que conecte al vertice i con el vertice j.
   pesos_.assign(num_vertices, std::vector<double>(num_vertices, -1.0));
   for (int i = 0; i < num_vertices_; ++i) {
-    pesos_[i][i] = 0;   // d(i,i) = 0
+    pesos_[i][i] = 0.0;   // d(i,i) = 0
   }
 }
 
@@ -26,7 +26,9 @@ void Grafo::AnadirAristaNoDirigida(int u, int v, double peso) {
   if (u == v) throw std::invalid_argument("Self-loop no permitido.");   // Ignorar bucles propios
   if (peso < 0.0) throw std::invalid_argument("El peso no debe ser < 0.0");
 
-  if (ExisteArista(u,v)) return;
+  // En caso de querer modificar las aristas entre dos nodos, deberia comentar esto
+  // Y descomentar un trozo de codigo en AnadirVecino que se encarga de actualizar los nuevos pesos
+  // if (ExisteArista(u,v)) return;
   
   // Añadimos los pesos de las aristas a sus respectivos nodos, recordando que es un grafo no dirgido
   // con lo que si se le añado de A a B, también se tiene que hacer de B a A.

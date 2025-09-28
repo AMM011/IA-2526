@@ -10,13 +10,16 @@ void Nodo::AnadirVecino(int vecino_id, double peso) {
     throw std::invalid_argument ("El peso de la arista no puede ser negativo");
   }
 
-  // En caso de querer realizar una modificación en alguna arista existe, es decir, actualizar el peso y no añadir el nodo
-  //for (auto& vecino: vecinos_) {
-  //  if (vecino.first == vecino_id) vecino.second = peso;
-  //}
+  // Si existe, actualizamos y salimos
+  for (auto& vecino: vecinos_) {
+    if (vecino.first == vecino_id) {
+      vecino.second = peso;
+      return; 
+    } 
+  }
 
-  // Verificamos si el vecino existe o no
-  if (!TieneVecino(vecino_id)) vecinos_.emplace_back(vecino_id, peso);
+  // Si no existe, lo añadimos y salimos
+  vecinos_.emplace_back(vecino_id, peso);
 }
 
 bool Nodo::TieneVecino(int vecino_id) const {

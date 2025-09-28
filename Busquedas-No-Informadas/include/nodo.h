@@ -6,7 +6,7 @@
 #include <stdexcept>
 
 /**
- * #brief Representa un nodo del grafo.
+ * @brief Representa un nodo del grafo.
  * 
  * Cada nodo conoce su identificador y la lista de sus vecinos directos,
  * junto con el peso (costo) de la arista que los conecta.
@@ -46,7 +46,7 @@ class Nodo {
    *       se insertan dos entradas. Normalmente se gestiona desde Grafo para 
    *       mantener una sola arista por par {u, v}.
    */
-  void AnadirVecino(int veciono_id, double peso);
+  void AnadirVecino(int vecino_id, double peso);
 
   /**
    * @brief Verifica si el vecino ya existe o no. 
