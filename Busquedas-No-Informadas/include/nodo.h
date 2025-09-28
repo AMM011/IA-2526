@@ -48,6 +48,13 @@ class Nodo {
   void AnadirVecino(int veciono_id, double peso);
 
   /**
+   * @brief Verifica si el vecino ya existe o no. 
+   * @param vecino_id Identificador del vecino a verificar (1-based).
+   * @return true si el vecino existe, false en caso contrario
+   */
+  bool TieneVecino(int vecino_id) const;
+
+  /**
    * @brief Devuelve la lista de vecinos del nodo.
    * @return Vector de pares (id, peso(costo)) de los vecinos del nodo.
    */

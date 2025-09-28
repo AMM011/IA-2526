@@ -77,7 +77,7 @@ class Grafo {
 
   std::vector<Nodo> nodos_;   ///< Contiene todos los nodos (cada uno con su id y vecinos)
 
-  std::vector<std::vector<double>> pesos_;  ///< Matriz de presos (NxN): coste de la arista o -1 si no existe.
+  std::vector<std::vector<double>> pesos_;  ///< Matriz de adyacencia ponderada (N = num_aristas)(NxN): coste de la arista o -1 si no existe.
 
   void VerificarVerticeOExcepcion(int u) const; ///< Verifica que u está en [1, num_vertices_], si no lanza excepción.
 };
