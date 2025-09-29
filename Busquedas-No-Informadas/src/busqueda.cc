@@ -69,13 +69,13 @@ trace::ResultadoBusqueda busqueda::Bfs(const Grafo& g, int origen, int destino, 
       // Guardamos registro 
       resultado.traza.push_back(registro);
 
-      if (opts.parar_a_primera_solución) {
+      if (opts.parar_a_primera_solucion) {
         return resultado;
       }
     }
 
     // Expansión de vecinos
-    std::vector<std::pair<int, double>> vecinos_actual_del_id= g.GetVecinosPorId(id_nodo_actual);
+    const auto& vecinos_actual_del_id = g.GetVecinosPorId(id_nodo_actual);
     
     // Recorremos la lista g.
     for (const auto& vecino : vecinos_actual_del_id) {
@@ -104,8 +104,8 @@ trace::ResultadoBusqueda busqueda::Bfs(const Grafo& g, int origen, int destino, 
     resultado.traza.push_back(registro);
   }
   // Si no hay camino 
-  resultado.camino.clear();
-  resultado.coste_total = 0.0;
+  trace::ResultadoBusqueda resultado;
 
   return resultado;
 }
+

@@ -59,7 +59,7 @@ struct ResultadoBusqueda {
  *             - false = no ascendientes.
  */
 struct OpcionesBusqueda {
-  bool parar_a_primera_solución = true;
+  bool parar_a_primera_solucion = true;
   bool vecinos_ascendientes = true;
 };
 
