@@ -1,6 +1,7 @@
 #include "busqueda.h"
 
 #include <queue>
+#include <stack>
 #include <algorithm>
 
 trace::ResultadoBusqueda busqueda::Bfs(const Grafo& g, int origen, int destino, const trace::OpcionesBusqueda& opts) {
@@ -112,3 +113,6 @@ trace::ResultadoBusqueda busqueda::Bfs(const Grafo& g, int origen, int destino, 
   return resultado;
 }
 
+trace::ResultadoBusqueda busqueda::Dfs(const Grafo& g, int origen, int destino, const trace::OpcionesBusqueda& opts) {
+  
+}
