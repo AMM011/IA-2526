@@ -1,12 +1,16 @@
 #include "busqueda.h"
 
 #include <queue>
-#include <stack>
 #include <algorithm>
 
 trace::ResultadoBusqueda busqueda::Bfs(const Grafo& g, int origen, int destino, const trace::OpcionesBusqueda& opts) {
   // Obtenemos el numero de vertices del grafo
   int n = g.GetNumVertices();
+
+  if (origen < 1 || origen > n || destino < 1 || destino > n) {
+    throw std::out_of_range("origen/destino fuera de rango");
+  }
+
   // Comenzamos creando la cola, aqui se van los nodos por visitar
   std::queue<int> fronteras;
   // Creamos un vector donde vamos almacenar los nodos visitados
@@ -62,14 +66,15 @@ trace::ResultadoBusqueda busqueda::Bfs(const Grafo& g, int origen, int destino, 
       resultado.camino = camino_temp;
 
       // Calcumos el coste total
-      for (int i = 0; i < resultado.camino.size() - 1; ++i) {
+      for (size_t i = 0; i < resultado.camino.size() - 1; ++i) {
         resultado.coste_total += g.GetPesoArista(resultado.camino[i], resultado.camino[i+1]);
       }
 
       // Guardamos registro 
-      resultado.traza.push_back(registro);
+    //   resultado.traza.push_back(registro);
 
       if (opts.parar_a_primera_solucion) {
+        resultado.traza.push_back(registro);
         return resultado;
       }
     }
@@ -103,8 +108,6 @@ trace::ResultadoBusqueda busqueda::Bfs(const Grafo& g, int origen, int destino, 
     // Guardamos el resultado en el registro
     resultado.traza.push_back(registro);
   }
-  // Si no hay camino 
-  trace::ResultadoBusqueda resultado;
 
   return resultado;
 }
