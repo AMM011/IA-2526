@@ -4,112 +4,117 @@
 #include <stack>
 #include <algorithm>
 
+// Namespace con función helper
+namespace {
+//Comprueba si v ya aparece en el camino desde la raíz hasta u_idx
+bool EstaEnCamino(int v, int index_u, const std::vector<NodoArbol>& arbol) {
+  // Recorremos el camino del arbol de un nodo concreto, sustituyendo el valor por el de padre hasta llegar a 
+  // -1, donde se encuentra el origen
+  for (int x = index_u; x != -1 ; x = arbol[x].padre_idx) {
+    if (v == arbol[x].id) return true;
+  }
+  return false;
+} 
+}
+
 trace::ResultadoBusqueda busqueda::Bfs(const Grafo& g, int origen, int destino, const trace::OpcionesBusqueda& opts) {
   // Obtenemos el numero de vertices del grafo
-  int n = g.GetNumVertices();
+  const int n = g.GetNumVertices();
 
   if (origen < 1 || origen > n || destino < 1 || destino > n) {
     throw std::out_of_range("origen/destino fuera de rango");
   }
 
-  // Comenzamos creando la cola, aqui se van los nodos por visitar
-  std::queue<int> fronteras;
-  // Creamos un vector donde vamos almacenar los nodos visitados
-  std::vector<bool> visitados(n, false);
-  // Creamos un vector padre, para construir un camino al final
-  std::vector<int> padre(n, 0);
-  // Creamos una estructura ResultadoBusqueda, donde vamos almacenar el resultado
+  // Creamos un vector donde guardamos todos los nodos del árbol de busqueda
+  std::vector<NodoArbol> arbol;
+  arbol.push_back({origen, -1, 0.0, 0});  // Nodo raíz
+
+  // Creamos una cola (frontera) donde vamos a ir almacenado los índices a arbol
+  std::queue<int> frontera;
+  // Almacenamos el primer índice del arbol
+  frontera.push(0);
+
   trace::ResultadoBusqueda resultado;
-
-  int origen_idx = origen - 1;
-
-  // Comenzamos metiendo el origen a la frontera, ya que es el primer nodo
-  fronteras.push(origen);
-  // Marcamos el origen como visitado visitado
-  visitados[origen_idx] = true;
-  // Añadimos el origen como sin padre
-  padre[origen_idx] = 0;
-  // Inicializamos el contador de iteraciones en 0
   int iteracion = 0;
 
-  // Comenzamos el bucle, mientras la cola no este vacia 
-  while (!fronteras.empty()) {
-    ++iteracion;
-    // Creamos la estructura del registo, para ir almacenado los datos
+  while (!frontera.empty()) {
+    // Creamos una variable registro, donde vamos a ir almacenando que pasa en cada iteración
     trace::RegistroIteracion registro;
-    registro.paso = iteracion;
+    registro.paso = ++iteracion;
     
-    // Extraemos el nodo actual de la frontera (la cola)
-    int id_nodo_actual = fronteras.front();
-    fronteras.pop();
+    const int index_actual = frontera.front();
+    frontera.pop();
 
-    // Añadimos el nodo actual al registro
-    registro.inspeccionados_delta.push_back(id_nodo_actual);
+    const NodoArbol& nodo_actual = arbol[index_actual];
 
-    // Aumentamos el valor de nodos inspenccionados del resultado
+    registro.inspeccionados_delta.push_back(nodo_actual.id);
+
     resultado.nodos_inspeccionados++;
 
-    // Ahora comprobamos si es el objetivo y si la opción de detenerse cuando se encuentra
-    // esta activada
-    if (id_nodo_actual == destino) {
+    if (nodo_actual.id == destino) {
+
       resultado.found = true;
-      
-      // Reconstruir camino usando el vector padre
-      std::vector<int> camino_temp;
-      int actual = destino;
-      while (actual != 0) { // 0 significa sin padre
-        camino_temp.push_back(actual);
-        actual = padre[actual - 1]; // Convertimos a base-0
+
+      // Reconstrucción de camino usando pradre_idx
+      std::vector<int> camino_rev;
+      for (int x = index_actual; x != -1; x = arbol[x].padre_idx) {
+        camino_rev.push_back(arbol[x].id);
       }
 
-      // Invertimos para tener camino origen -> destino
-      std::reverse(camino_temp.begin(), camino_temp.end());
-      resultado.camino = camino_temp;
+      // Invertimos los valores de camino_rev
+      std::reverse(camino_rev.begin(),camino_rev.end());
 
-      // Calcumos el coste total
-      for (size_t i = 0; i < resultado.camino.size() - 1; ++i) {
-        resultado.coste_total += g.GetPesoArista(resultado.camino[i], resultado.camino[i+1]);
+      // Añadimos el camino al resultado
+      resultado.camino = camino_rev;
+
+      resultado.coste_total = 0.0;
+
+      // Ahora hallamos el coste total
+      for (size_t i = 0; i + 1 < resultado.camino.size(); ++i) {
+        resultado.coste_total += g.GetPesoArista(resultado.camino[i], resultado.camino[i + 1]);
       }
 
-      // Guardamos registro 
-    //   resultado.traza.push_back(registro);
-
+      // Comprobamos si quiere que se detenga en la primera iteración
       if (opts.parar_a_primera_solucion) {
         resultado.traza.push_back(registro);
         return resultado;
+      } else {
+        resultado.traza.push_back(registro);
+        continue;
       }
     }
 
-    // Expansión de vecinos
-    const auto& vecinos_actual_del_id = g.GetVecinosPorId(id_nodo_actual);
+    // Expandimos vecinos
+    // Obtenemos los vecinos actuales
+    const auto& vecinos_actuales = g.GetVecinosPorId(arbol[index_actual].id);
 
-    // Recorremos la lista g.
-    for (const auto& vecino : vecinos_actual_del_id) {
-      int vecino_id = vecino.first;
-      int vecino_idx = vecino_id - 1;   // Conversión explícita a base-0
+    // Añadimos los nuevos nodos generados al registro
+    // for (size_t i = 0; i < vecinos_actuales.size(); ++i) {
+    //   registro.generados_delta.push_back(vecinos_actuales[i].first);
+    // }
+    for(const auto& vecino : vecinos_actuales) {
+      const int vecino_id = vecino.first;
+      const double peso = vecino.second;
+      
+      // Comprobamos que el vecino no este ya en el camino,
+      // asi evitamos cicls en el camino actual (tree-search)
+      if (EstaEnCamino(vecino_id, index_actual, arbol)) continue;
 
-      // Si el nodo actual no esta visitado, entramos dentro
-      if (!visitados[vecino_idx]) {
-        // Lo marcamos como visitado
-        visitados[vecino_idx] = true;
+      // Generamos al hijo (hoja)
+      NodoArbol hijo{vecino_id, index_actual, nodo_actual.coste_acumulado + peso, nodo_actual.profundidad + 1};
+      arbol.push_back(hijo);
+      // Obtenemos el indice del hijo restandole al tamaño del arbol 1, ya que los hijos se van añadiendo
+      // entonces su tamaño aumenta
+      const int index_hijo = static_cast<int>(arbol.size()) - 1;
 
-        // Colocamos el id del nodo actual dentro del vector de los padres
-        padre[vecino_idx] = id_nodo_actual;
-
-        // Lo añadimos en la cola
-        fronteras.push(vecino_id);
-
-        // Lo añadimos a registro.generados_delta
-        registro.generados_delta.push_back(vecino_id);
-
-        // Aumentamos el contador de nodos_generados
-        resultado.nodos_generados++;
-      }
+      // Añadimos el indice del hijo a la frontera
+      frontera.push(index_hijo);
+      // Añadimos el nuevo nodo generado
+      registro.generados_delta.push_back(vecino_id);
+      resultado.nodos_generados++;
     }
-    // Guardamos el resultado en el registro
     resultado.traza.push_back(registro);
   }
-
   return resultado;
 }
 

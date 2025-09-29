@@ -5,6 +5,21 @@
 #include "nodo.h"
 #include "trace.h"
 
+
+/**
+ * @brief Nodo del árbol de búsqueda.
+ *         - id: estado del espacio de estados (1-based).
+ *         - padre_idx: índice en un vector 'arbol' (o -1 si es la raíz).
+ *         - coste_acumulado: coste acumulado hasta este nodo.
+ *         - profundidad: número de niveles desde el estado inicial.
+ */
+struct NodoArbol {
+  int id;           
+  int padre_idx; 
+  double coste_acumulado; 
+  int profundidad;  
+};
+
 /**
  * @brief Implementa algoritmos de búsqueda no informada en grafos.
  */
