@@ -119,5 +119,72 @@ trace::ResultadoBusqueda busqueda::Bfs(const Grafo& g, int origen, int destino, 
 }
 
 trace::ResultadoBusqueda busqueda::Dfs(const Grafo& g, int origen, int destino, const trace::OpcionesBusqueda& opts) {
-  
+  // Obtenemos el numero de vertices del grafo
+  const int n = g.GetNumVertices();
+
+  if (origen < 1 || origen > n || destino < 1 || destino > n) {
+    throw std::out_of_range("origen/destino fuera de rango");
+  }
+
+  // Creamos el arbol
+  std::vector<NodoArbol> arbol;
+  arbol.push_back({origen, -1, 0.0, 0});
+
+  // Creamos la frontera, podemos usar una stack, pero yo prefiero usar un vector
+  std::vector<int> stack;
+  stack.push_back(0);
+
+  trace::ResultadoBusqueda resultado;
+  int iteracion = 0;
+
+  while(!stack.empty()) {
+    trace::RegistroIteracion registro;
+    registro.paso = ++iteracion;
+
+    int index_actual = stack.back();
+    stack.pop_back();
+
+    const NodoArbol nodo_actual = arbol[index_actual];
+
+    registro.inspeccionados_delta.push_back(nodo_actual.id);
+
+    resultado.nodos_inspeccionados++;
+
+    // Comprobamos si el nodo actual es el destino
+    if (nodo_actual.id == destino) {
+      resultado.found = true;
+
+      // obtenemos el camino
+      std::vector<int> camino_rev;
+
+      for(int x = index_actual; x != -1; x = arbol[x].padre_idx) {
+        camino_rev.push_back(arbol[x].id);
+      }
+
+      // Reinvertimos los valores
+      std::reverse(camino_rev.begin(), camino_rev.end());
+
+      // Los añadimos a la solución
+      resultado.camino = camino_rev;
+
+      // Obtenemos el coste total
+      for (int i = 0; i < resultado.camino.size() - 1; ++i) {
+        resultado.coste_total += g.GetPesoArista(resultado.camino[i], resultado.camino[i + 1]);
+      } 
+
+      // Comprobamos si se detiene cuando encuentra el objetivo
+      if (opts.parar_a_primera_solucion) {
+        resultado.traza.push_back(registro);
+        return resultado;
+      } else {
+        resultado.traza.push_back(registro);
+        continue;
+      }
+    } 
+
+    // Expansión de vecinos
+    const auto& vecino = g.GetVecinosPorId(arbol[index_actual].id);
+
+    
+  }
 }
