@@ -82,7 +82,7 @@ trace::ResultadoBusqueda busqueda::Bfs(const Grafo& g, int origen, int destino, 
 
     // Expansión de vecinos
     const auto& vecinos_actual_del_id = g.GetVecinosPorId(id_nodo_actual);
-    
+
     // Recorremos la lista g.
     for (const auto& vecino : vecinos_actual_del_id) {
       int vecino_id = vecino.first;
