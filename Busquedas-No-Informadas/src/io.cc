@@ -2,9 +2,11 @@
 #include "busqueda.h"
 
 #include <iostream>
+#include <string>
 #include <stdexcept>
 #include <vector>
 #include <fstream>
+#include <iomanip>
 
 namespace {
 /**
@@ -31,6 +33,22 @@ double ParseFlexibleDouble(std::string s) {
   for (char& c : s) if (c == ',') c = '.';
   // std::stod sirve para convertir string a double
   return std::stod(s);
+}
+
+/**
+ * @brief Convierte un vector de enteros a string en formato [a, b, c].
+ * @param vec Vector de enteros.
+ * @return String representando el vector.
+ */
+std::string VecAString(const std::vector<int>& vec) {
+  if (vec.empty()) return "-";
+  std::string resultado = "[";
+  for(size_t i = 0; i < vec.size(); ++i) {
+    resultado += std::to_string(vec[i]);
+    if (i + 1 < vec.size()) resultado += ", ";
+  }
+  resultado += "]";
+  return resultado;
 }
 }   // namespace
 
@@ -64,10 +82,11 @@ io::DatosLectura io::LeerFichero(std::istream& in) {
   // i = 1             | i = 2             | i = 3             | ... | i = N-1
   // j = 2, 3, ..., N. | j = 3, 4, ..., N. | j = 4, 5, ..., N. | ... | j = N
   // Entonces, para cada i, j comienza en i+1 y termina en N
-  for (int i = 1; i < num_vertices - 1; ++i) {
+  for (int i = 1; i <= num_vertices - 1; ++i) {
     for (int j = i + 1; j <= num_vertices; ++j) {
       if (!SiguienteToken(in, token)) {
-        throw std::runtime_error("Error leyengo número de vértices");
+        throw std::runtime_error("Error leyendo peso para (" + std::to_string(i) +
+                                 "," + std::to_string(j) + ")");
       }
       double peso = ParseFlexibleDouble(token);
 
@@ -89,4 +108,55 @@ io::DatosLectura io::LeerFichero(std::istream& in) {
   io::DatosLectura problema{std::move(grafo)};
 
   return problema;
+}
+
+
+void io::ImprimirTraza(std::ostream& out, const trace::ResultadoBusqueda& r, bool acumulada) {
+  size_t acc_inspected = 0, acc_generated = 0;
+
+  out << "Traza (" << r.traza.size() << " iteraciones)\n";
+  out << "-----------------------------------------\n";
+  for (const auto& it : r.traza) {
+    out << "Iteración " << it.paso << "\n";
+    out << "  Nodos inspeccionados (Δ): " << VecAString(it.inspeccionados_delta) << "\n";
+    out << "  Nodos generados     (Δ): " << VecAString(it.generados_delta) << "\n";
+
+    if (acumulada) {
+      acc_inspected += it.inspeccionados_delta.size();
+      acc_generated += it.generados_delta.size();
+      out << "  Inspeccionados (acum): " << acc_inspected << "\n";
+      out << "  Generados     (acum): " << acc_generated << "\n";
+    }
+    out << "\n";
+  }
+}
+
+void io::ImprimirSolucion(std::ostream& out, const trace::ResultadoBusqueda& r) {
+  if (!r.found) {
+    out << "No se encontró solución.\n";
+    return;
+  }
+
+  // Si se encontró solución, imprimimos el camino 
+  for (size_t i = 0; i < r.camino.size(); ++i) {
+    // Si es distinto del primero, imprimimos la flecha
+    if (i) out << " -> ";
+    out << r.camino[i];
+  }
+
+  // Imprimimos el coste total
+  // .setf e unsetf sirven para formatear la salida
+  // std::ios::fixed fuerza a que siempre haya dos decimales
+  out.setf(std::ios::fixed);
+  out << "Coste total: ";
+  out << std::setprecision(2) << r.coste_total << "\n";
+  out.unsetf(std::ios::fixed);
+}
+
+void io::ImprimirResumen(std::ostream& out, const trace::ResultadoBusqueda& r) {
+  out << "Resumen\n";
+  out << "-------\n";
+  out << "Iteraciones:        " << r.traza.size() << "\n";
+  out << "Nodos inspeccionados: " << r.nodos_inspeccionados << "\n";
+  out << "Nodos generados:      " << r.nodos_generados << "\n";
 }

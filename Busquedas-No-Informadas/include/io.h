@@ -5,6 +5,7 @@
 #include "trace.h"
 
 #include <iosfwd>
+#include <string>
 
 
 namespace io {
@@ -51,14 +52,28 @@ namespace io {
   // Métodos de escritura 
   // Imprimimos la traza
   
-  // Imprime la tabla de traza (delta por iteración o acumulada)
-  void ImprimirTraza(std::ostream& out, const trace::ResultadoBusqueda& r, bool acumulada);
+  /**
+   * @brief Imprime la traza de la búsqueda en formato tabla.
+   * @param out Stream de salida (por ejemplo, std::cout o un std::ofstream).
+   * @param r Resultado de la búsqueda, incluyendo la traza.
+   * @param acumulada Si es true, imprime los totales acumulados; si es false, imprime los deltas por iteración.
+   */
+  void ImprimirTraza(std::ostream& out, const trace::ResultadoBusqueda& r, bool acumulada = false);
   
-  // Imprime camino y coste (o mensaje de no encontrado)
-  void ImprimirSolucion(const trace::ResultadoBusqueda& respuesta, std::ostream& out);
+  /**
+   * @brief Imprime el camino solución y su coste total.
+   * @param out Stream de salida (por ejemplo, std::cout o un std::ofstream).
+   * @param r Resultado de la búsqueda, incluyendo el camino y coste.
+   * @throws std::runtime_error Si no se encontró solución.
+   */
+  void ImprimirSolucion(std::ostream& out, const trace::ResultadoBusqueda& r);
   
-  // Imprime resumen de contadores y métricas
-  void ImprimirResumen(const trace::ResultadoBusqueda& respuesta, std::ostream& out);
+    /**
+     * @brief Imprime un resumen final de la búsqueda.
+     * @param out Stream de salida (por ejemplo, std::cout o un std::ofstream).
+     * @param r Resultado de la búsqueda, incluyendo totales de nodos generados e inspeccionados.
+     */
+  void ImprimirResumen(std::ostream& out, const trace::ResultadoBusqueda& r);
 }   // namespace io
 
 #endif
