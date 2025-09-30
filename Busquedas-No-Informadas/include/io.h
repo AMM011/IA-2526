@@ -24,7 +24,7 @@ namespace io {
    * - algoritmo: Algoritmo de búsqueda a utilizar (BFS o DFS).
    * - opts: Opciones de la búsqueda (criterio de parada, orden de vecinos).
    */
-  struct Problema {
+  struct DatosLectura {
     Grafo grafo;
     int origen = 1;
     int destino = 1;
@@ -33,12 +33,12 @@ namespace io {
   };
 
   /**
-   * @brief Lee una instancia desde un flujo (fichero o stdin) en el formato de la práctica.
-   * @param in Flujo de entrada.
+   * @brief Lee una instancia desde un stream en el formato de la práctica.
+   * @param in Stream de entrada (por ejemplo, std::cin o un std::ifstream).
    * @return Problema con grafo construido, origen/destino y opciones.
-   * @throws std::runtime_error Formato inválido, conteo de valores incorrecto, etc.
+   * @throws std::runtime_error Si hay errores de formato.
    */
-  Problema LeerFichero(std::istream& in);
+  DatosLectura LeerFichero(std::istream& in);
 
   /**
     * @brief Lee una instancia desde un fichero en el formato de la práctica.
@@ -46,7 +46,7 @@ namespace io {
     * @return Problema con grafo construido, origen/destino y opciones.
     * @throws std::runtime_error Si no se puede abrir el fichero o hay errores de formato.
     */
-  Problema LeerFichero(const std::string& nombre_fichero);
+  DatosLectura LeerFichero(const std::string& nombre_fichero);
 
   // Métodos de escritura 
   // Imprimimos la traza
