@@ -8,7 +8,7 @@
 int main(int argc, char* argv[]) {
   if (argc < 5) {
     std::cerr << "Uso: " << argv[0]
-              << " <fichero_grafo> <origen> <destino> <algoritmo: bfs|dfs> [--acumulada] [--parar]\n";
+              << " <fichero_grafo> <origen> <destino> <algoritmo: bfs|dfs> [--acumulada] [--parar] [--out <fichero_salida>]\n";
     return 1;
   }
 
@@ -16,6 +16,7 @@ int main(int argc, char* argv[]) {
   int origen = std::stoi(argv[2]);
   int destino = std::stoi(argv[3]);
   std::string alg_str = argv[4];
+  std::string fichero_salida = "salida.txt";
 
   bool acumulada = false;
   bool parar = false;
@@ -23,7 +24,17 @@ int main(int argc, char* argv[]) {
   for (int i = 5; i < argc; ++i) {
     std::string arg = argv[i];
     if (arg == "--acumulada") acumulada = true;
-    if (arg == "--parar") parar = true;
+    else if (arg == "--parar") parar = true;
+    else if (arg == "--out" && i + 1 < argc) {
+      fichero_salida = argv[i + 1];
+      ++i;
+    }
+  }
+
+  std::ofstream fout(fichero_salida);
+  if (!fout) {
+    std::cerr << "No se pudo abrir fichero de salida: " << fichero_salida << "\n";
+    return 1;
   }
 
   busqueda busq;
@@ -46,9 +57,9 @@ int main(int argc, char* argv[]) {
     }
 
     // Impresión
-    io::ImprimirTraza(std::cout, resultado, acumulada);
-    io::ImprimirSolucion(std::cout, resultado);
-    io::ImprimirResumen(std::cout, resultado);
+    io::ImprimirTraza(fout, resultado, acumulada);
+    io::ImprimirSolucion(fout, resultado);
+    io::ImprimirResumen(fout, resultado);
 
   } catch (const std::exception& e) {
     std::cerr << "Error: " << e.what() << "\n";
