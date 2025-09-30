@@ -118,9 +118,9 @@ void io::ImprimirTraza(std::ostream& out, const trace::ResultadoBusqueda& r, boo
   out << "-----------------------------------------\n";
   for (const auto& it : r.traza) {
     out << "Iteración " << it.paso << "\n";
-    out << "  Nodos inspeccionados (Δ): " << VecAString(it.inspeccionados_delta) << "\n";
     out << "  Nodos generados     (Δ): " << VecAString(it.generados_delta) << "\n";
-
+    out << "  Nodos inspeccionados (Δ): " << VecAString(it.inspeccionados_delta) << "\n";
+    
     if (acumulada) {
       acc_inspected += it.inspeccionados_delta.size();
       acc_generated += it.generados_delta.size();
@@ -137,12 +137,14 @@ void io::ImprimirSolucion(std::ostream& out, const trace::ResultadoBusqueda& r) 
     return;
   }
 
-  // Si se encontró solución, imprimimos el camino 
+  // Si se encontró solución, imprimimos el camino
+  out << "Camino: "; 
   for (size_t i = 0; i < r.camino.size(); ++i) {
     // Si es distinto del primero, imprimimos la flecha
     if (i) out << " -> ";
     out << r.camino[i];
   }
+  out << "\n";
 
   // Imprimimos el coste total
   // .setf e unsetf sirven para formatear la salida

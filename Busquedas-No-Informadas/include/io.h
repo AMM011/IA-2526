@@ -64,7 +64,6 @@ namespace io {
    * @brief Imprime el camino solución y su coste total.
    * @param out Stream de salida (por ejemplo, std::cout o un std::ofstream).
    * @param r Resultado de la búsqueda, incluyendo el camino y coste.
-   * @throws std::runtime_error Si no se encontró solución.
    */
   void ImprimirSolucion(std::ostream& out, const trace::ResultadoBusqueda& r);
   
