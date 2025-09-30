@@ -2,6 +2,7 @@
 
 #include <queue>
 #include <stack>
+#include <stdexcept>
 #include <algorithm>
 
 // Namespace con función helper
@@ -144,7 +145,7 @@ trace::ResultadoBusqueda busqueda::Dfs(const Grafo& g, int origen, int destino, 
     int index_actual = stack.back();
     stack.pop_back();
 
-    const NodoArbol nodo_actual = arbol[index_actual];
+    const NodoArbol& nodo_actual = arbol[index_actual];
 
     registro.inspeccionados_delta.push_back(nodo_actual.id);
 
@@ -168,7 +169,8 @@ trace::ResultadoBusqueda busqueda::Dfs(const Grafo& g, int origen, int destino, 
       resultado.camino = camino_rev;
 
       // Obtenemos el coste total
-      for (int i = 0; i < resultado.camino.size() - 1; ++i) {
+      resultado.coste_total = 0.0;
+      for (size_t i = 0; i + 1 < resultado.camino.size(); ++i) {
         resultado.coste_total += g.GetPesoArista(resultado.camino[i], resultado.camino[i + 1]);
       } 
 
@@ -183,8 +185,32 @@ trace::ResultadoBusqueda busqueda::Dfs(const Grafo& g, int origen, int destino, 
     } 
 
     // Expansión de vecinos
-    const auto& vecino = g.GetVecinosPorId(arbol[index_actual].id);
+    const auto& vecinos = g.GetVecinosPorId(nodo_actual.id);
 
-    
+    // Recorremos los vecinos
+    // vecinos.size() es size_t (unsigned). Si vecinos.size()==0, size()-1 desborda antes de convertir a int
+    // entonces, lo transformamos a un int antes de que desborde
+    for (int i = static_cast<int>(vecinos.size()) - 1; i >= 0; --i) {
+      int vecino_id = vecinos[i].first;
+      double peso = vecinos[i].second;
+
+      // Comprobamos que el vecino no este ya en el camino,
+      // asi evitamos cicls en el camino actual (tree-search)
+      if (EstaEnCamino(vecino_id, index_actual, arbol)) continue;
+
+      // Creamos el nodo hijo que vamos añadir al arbol
+      NodoArbol hijo({vecino_id, index_actual, nodo_actual.coste_acumulado + peso, nodo_actual.profundidad + 1});
+      arbol.push_back(hijo);
+      // Obtenemos el indice del hijo restandole al tamaño del arbol 1, ya que los hijos se van añadiendo
+      // entonces su tamaño aumenta
+      const int index_hijo = static_cast<int>(arbol.size()) - 1;
+      
+      // Añadimos el indice del hijo a la pila
+      stack.push_back(index_hijo);  // LIFO, ultimo en entrar , primeor en salir, caracteristico del DFS
+      registro.generados_delta.push_back(vecino_id);  // En el mismo orden que se apilan
+      resultado.nodos_generados++;
+    }
+    resultado.traza.push_back(registro);
   }
+  return resultado;
 }
