@@ -1,0 +1,29 @@
+Traza (5 iteraciones)
+-----------------------------------------
+Iteración 1
+  Nodos generados     (Δ): [2, 5]
+  Nodos inspeccionados (Δ): [1]
+
+Iteración 2
+  Nodos generados     (Δ): [3, 4, 20]
+  Nodos inspeccionados (Δ): [2]
+
+Iteración 3
+  Nodos generados     (Δ): [3, 6, 10, 11]
+  Nodos inspeccionados (Δ): [5]
+
+Iteración 4
+  Nodos generados     (Δ): [5, 6]
+  Nodos inspeccionados (Δ): [3]
+
+Iteración 5
+  Nodos generados     (Δ): -
+  Nodos inspeccionados (Δ): [4]
+
+Camino: 1 -> 2 -> 4
+Coste total: 19.00
+Resumen
+-------
+Iteraciones:        5
+Nodos inspeccionados: 5
+Nodos generados:      11
