@@ -38,6 +38,15 @@ trace::ResultadoBusqueda busqueda::Bfs(const Grafo& g, int origen, int destino, 
   trace::ResultadoBusqueda resultado;
   int iteracion = 0;
 
+  // Iteración 1: origen generado, aun no inspeccionado
+  
+  trace::RegistroIteracion registro0;
+  registro0.paso = ++iteracion;        // paso = 1
+  registro0.generados_delta.push_back(origen);
+  resultado.nodos_generados++;        // contamos el origen como generado
+  resultado.traza.push_back(registro0);
+  
+
   while (!frontera.empty()) {
     // Creamos una variable registro, donde vamos a ir almacenando que pasa en cada iteración
     trace::RegistroIteracion registro;
@@ -137,6 +146,13 @@ trace::ResultadoBusqueda busqueda::Dfs(const Grafo& g, int origen, int destino, 
 
   trace::ResultadoBusqueda resultado;
   int iteracion = 0;
+
+  // Iteración 1: origen generado, aun no inspeccionado
+  trace::RegistroIteracion registro0;
+  registro0.paso = ++iteracion;        // paso = 1
+  registro0.generados_delta.push_back(origen);
+  resultado.nodos_generados++;        // contamos el origen como generado
+  resultado.traza.push_back(registro0);
 
   while(!stack.empty()) {
     trace::RegistroIteracion registro;

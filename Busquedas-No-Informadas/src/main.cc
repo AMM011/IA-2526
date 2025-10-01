@@ -71,6 +71,7 @@ int main(int argc, char* argv[]) {
     fout << "Número de aristas del grafo: " << m << "\n";
     fout << "Vértice origen: " << origen << "\n";
     fout << "Vértice destino: " << destino << "\n";
+    // io::ImprimirTraza(fout, resultado, acumulada);
     io::ImprimirTrazaEstiloGuion(fout, resultado, origen);
     io::ImprimirSolucion(fout, resultado);
     io::ImprimirResumen(fout, resultado);

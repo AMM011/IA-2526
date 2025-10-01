@@ -58,14 +58,13 @@ std::string VecAString(const std::vector<int>& vec) {
  * @param s Conjunto de enteros.
  * @return String representando el conjunto.
  */
-std::string SetToCommaList(const std::set<int>& s) {
-  if (s.empty()) return "-";
+std::string SetToCommaList(const std::vector<int>& seq) {
+  if (seq.empty()) return "-";
   std::ostringstream oss;
   bool first = true;
-  for (int v : s) {
-    if (!first) oss << ", ";
-    oss << v;
-    first = false;
+  for (size_t i = 0; i < seq.size(); ++i) {
+    if (i) oss << ", ";
+    oss << seq[i];
   }
   return oss.str();
 }
@@ -137,8 +136,8 @@ void io::ImprimirTraza(std::ostream& out, const trace::ResultadoBusqueda& r, boo
   out << "-----------------------------------------\n";
   for (const auto& it : r.traza) {
     out << "Iteración " << it.paso << "\n";
-    out << "  Nodos generados     (Δ): " << VecAString(it.generados_delta) << "\n";
-    out << "  Nodos inspeccionados (Δ): " << VecAString(it.inspeccionados_delta) << "\n";
+    out << "  Nodos generados      : " << VecAString(it.generados_delta) << "\n";
+    out << "  Nodos inspeccionados : " << VecAString(it.inspeccionados_delta) << "\n";
     
     if (acumulada) {
       acc_inspected += it.inspeccionados_delta.size();
@@ -184,22 +183,23 @@ void io::ImprimirResumen(std::ostream& out, const trace::ResultadoBusqueda& r) {
 
 void io::ImprimirTrazaEstiloGuion(std::ostream& out, const trace::ResultadoBusqueda& r, int origen) {
   // Conjuntos acumulados (ordenados para impresión estable)
-  std::set<int> gen_acc;
-  std::set<int> insp_acc;
+  std::vector<int> gen_acc;
+  std::vector<int> insp_acc;
 
   // Iteración 1: solo origen generado
-  out << "-----------------------------------------\n";
-  out << "Iteración 1\n";
-  gen_acc.insert(origen);
-  out << "Nodos generados: " << SetToCommaList(gen_acc) << "\n";
-  out << "Nodos inspeccionados: -\n";
-  out << "-----------------------------------------\n";
+  // out << "-----------------------------------------\n";
+  // out << "Iteración 1\n";
+  // gen_acc.insert(origen);
+  // out << "Nodos generados: " << SetToCommaList(gen_acc) << "\n";
+  // out << "Nodos inspeccionados: -\n";
+  // out << "-----------------------------------------\n";
 
   // Iteraciones siguientes: acumular deltas en cada paso de la traza
-  int iter = 2;
+  int iter = 1;
+  out << "-----------------------------------------\n";
   for (const auto& it : r.traza) {
-    for (int v : it.generados_delta)     gen_acc.insert(v);
-    for (int v : it.inspeccionados_delta) insp_acc.insert(v);
+    for (int v : it.generados_delta)     gen_acc.push_back(v);
+    for (int v : it.inspeccionados_delta) insp_acc.push_back(v);
 
     out << "Iteración " << iter++ << "\n";
     out << "Nodos generados: " << SetToCommaList(gen_acc) << "\n";

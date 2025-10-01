@@ -6,7 +6,7 @@ INC_DIR     := include
 BUILD_DIR   := build
 
 CXX         := g++
-CXXFLAGS    := -Wall -Wextra -std=c++17 -O2 -I$(INC_DIR) -MMD -MP
+CXXFLAGS    := -Wall -Wextra -std=c++17 -O2 -I$(INC_DIR) -MMD -MP -g
 
 # ==== Fuentes y objetos ====
 SRC := $(wildcard $(SRC_DIR)/*.cc)
