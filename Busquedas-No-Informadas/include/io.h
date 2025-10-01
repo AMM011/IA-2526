@@ -59,6 +59,15 @@ namespace io {
    * @param acumulada Si es true, imprime los totales acumulados; si es false, imprime los deltas por iteración.
    */
   void ImprimirTraza(std::ostream& out, const trace::ResultadoBusqueda& r, bool acumulada = false);
+
+  /**
+   * @brief Imprime la traza en estilo guión:
+   *        - Iteración 1: Nodos generados = {origen}, Nodos inspeccionados = '-'
+   * @param out Flujo de salida.
+   * @param r Resultado de la búsqueda (con traza delta).
+   * @param origen Vértice origen (1-based).
+   */
+  void ImprimirTrazaEstiloGuion(std::ostream& out, const trace::ResultadoBusqueda& r, int origen);
   
   /**
    * @brief Imprime el camino solución y su coste total.

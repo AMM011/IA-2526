@@ -57,7 +57,21 @@ int main(int argc, char* argv[]) {
     }
 
     // Impresión
-    io::ImprimirTraza(fout, resultado, acumulada);
+    // Obtenemos n que es el número de nodos del grafo
+    const int n = datos.grafo.GetNumVertices();
+    // Obtenemos m que es el número de aristas del grafo
+    // Para ello, sumamos el número de vecinos de cada nodo y dividimos entre 2
+    // (porque el grafo es no dirigido y cada arista aparece dos veces).
+    size_t m = 0;
+    for (int i = 1; i <= n; ++i) m += datos.grafo.GetVecinosPorId(i).size();
+    m /= 2;  // cada arista aparece dos veces en vecinos (grafo no dirigido)
+
+    fout << "-----------------------------------------\n";
+    fout << "Número de nodos del grafo: " << n << "\n";
+    fout << "Número de aristas del grafo: " << m << "\n";
+    fout << "Vértice origen: " << origen << "\n";
+    fout << "Vértice destino: " << destino << "\n";
+    io::ImprimirTrazaEstiloGuion(fout, resultado, origen);
     io::ImprimirSolucion(fout, resultado);
     io::ImprimirResumen(fout, resultado);
 
