@@ -1,0 +1,37 @@
+-----------------------------------------
+Número de nodos del grafo: 15
+Número de aristas del grafo: 15
+Vértice origen: 8
+Vértice destino: 6
+-----------------------------------------
+Iteración 1
+Nodos generados: 8
+Nodos inspeccionados: -
+-----------------------------------------
+Iteración 2
+Nodos generados: 8, 2
+Nodos inspeccionados: 8
+-----------------------------------------
+Iteración 3
+Nodos generados: 8, 2, 5
+Nodos inspeccionados: 8, 2
+-----------------------------------------
+Iteración 4
+Nodos generados: 8, 2, 5, 4
+Nodos inspeccionados: 8, 2, 5
+-----------------------------------------
+Iteración 5
+Nodos generados: 8, 2, 5, 4, 6
+Nodos inspeccionados: 8, 2, 5, 4
+-----------------------------------------
+Iteración 6
+Nodos generados: 8, 2, 5, 4, 6
+Nodos inspeccionados: 8, 2, 5, 4, 6
+-----------------------------------------
+Camino: 8 -> 2 -> 5 -> 6
+Coste total: 15.00
+-----------------------------------------
+Resumen
+Iteraciones:        6
+Nodos inspeccionados: 5
+Nodos generados:      5

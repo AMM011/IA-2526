@@ -48,5 +48,10 @@ class busqueda {
    *         la búsqueda, y el total de nodos generados e inspeccionados.
    */
   trace::ResultadoBusqueda Dfs(const Grafo& g, int origen, int destino, const trace::OpcionesBusqueda& opts);
+
+  /**
+   * @brief para la modificación
+   */
+  trace::ResultadoBusqueda Modificacion(const Grafo& g, int origen, int destino, const trace::OpcionesBusqueda& opts);
 };
 #endif  // BUSQUEDA_H

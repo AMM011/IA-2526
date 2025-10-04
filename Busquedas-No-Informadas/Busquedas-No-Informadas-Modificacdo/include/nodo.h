@@ -18,11 +18,6 @@
  * 
  * Nota: El grafo no es dirigido, por lo que si el nodo A tiene como vecino al nodo B,
  * entonces el nodo B también debe tener como vecino al nodo A.
- * 
- * No contemplo en mi clase nodo los nodos padres por:
- * “Los padres son estado de la búsqueda, no del grafo. 
- *  Por eso uso parent[] local en BFS/DFS para reconstruir el camino al parar. 
- *  Así puedo correr múltiples búsquedas sin interferencias y mantener Nodo minimalista.”
  */
 class Nodo {
  public:

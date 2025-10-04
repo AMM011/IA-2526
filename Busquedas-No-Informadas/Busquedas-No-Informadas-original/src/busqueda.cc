@@ -4,6 +4,8 @@
 #include <stack>
 #include <stdexcept>
 #include <algorithm>
+// para rng
+#include <random>
 
 // Namespace con función helper
 namespace {
@@ -144,6 +146,11 @@ trace::ResultadoBusqueda busqueda::Dfs(const Grafo& g, int origen, int destino, 
   std::vector<int> stack;
   stack.push_back(0);
 
+  // next_pos será un vector paralelo a arbol y stack que nos dice
+  // añun no he explorado ningun vecino de este nodo.
+  std::vector<int> next_pos;
+  next_pos.push_back(0);
+
   trace::ResultadoBusqueda resultado;
   int iteracion = 0;
 
@@ -154,79 +161,97 @@ trace::ResultadoBusqueda busqueda::Dfs(const Grafo& g, int origen, int destino, 
   resultado.nodos_generados++;        // contamos el origen como generado
   resultado.traza.push_back(registro0);
 
-  while(!stack.empty()) {
+  
+  while (!stack.empty()) {
     trace::RegistroIteracion registro;
-    registro.paso = ++iteracion;
 
-    int index_actual = stack.back();
-    stack.pop_back();
+    while (!stack.empty()) {
+      int index_actual = stack.back();
+      const NodoArbol& nodo_actual = arbol[index_actual];
 
-    const NodoArbol& nodo_actual = arbol[index_actual];
+      // Inspeccionamos al entrar por primera vez
+      if (next_pos[index_actual] == 0) {
+        registro.inspeccionados_delta.push_back(nodo_actual.id);
+        resultado.nodos_inspeccionados++;
 
-    registro.inspeccionados_delta.push_back(nodo_actual.id);
+        // ¿Objetivo?
+        if (nodo_actual.id == destino) {
+          resultado.found = true;
 
-    resultado.nodos_inspeccionados++;
+          // Camino + coste
+          std::vector<int> camino_rev;
+          for (int x = index_actual; x != -1; x = arbol[x].padre_idx) camino_rev.push_back(arbol[x].id);
+          std::reverse(camino_rev.begin(), camino_rev.end());
+          resultado.camino = camino_rev;
 
-    // Comprobamos si el nodo actual es el destino
-    if (nodo_actual.id == destino) {
-      resultado.found = true;
+          resultado.coste_total = 0.0;
+          for (size_t i = 0; i + 1 < resultado.camino.size(); ++i) {
+            resultado.coste_total += g.GetPesoArista(resultado.camino[i], resultado.camino[i + 1]);
+          }
 
-      // obtenemos el camino
-      std::vector<int> camino_rev;
-
-      for(int x = index_actual; x != -1; x = arbol[x].padre_idx) {
-        camino_rev.push_back(arbol[x].id);
+          registro.paso = ++iteracion;
+          resultado.traza.push_back(std::move(registro));
+          if (opts.parar_a_primera_solucion) return resultado;
+          // Si no paramos, seguimos intentando expandir (como cualquier nodo)
+        }
       }
 
-      // Reinvertimos los valores
-      std::reverse(camino_rev.begin(), camino_rev.end());
+      // Intentamos generar exactamente un hijo desde este nodo
+      const auto& vecinos = g.GetVecinosPorId(nodo_actual.id);
+      int& pos = next_pos[index_actual];
 
-      // Los añadimos a la solución
-      resultado.camino = camino_rev;
+      bool genero_hijo = false;
+      // Este while avanza pos hasta encontrar un vecino válido o agotar
+      while (pos < static_cast<int>(vecinos.size())) {
+        int vecino_id = vecinos[pos].first;
+        double peso   = vecinos[pos].second;
+        ++pos; // avanza el cursor
 
-      // Obtenemos el coste total
-      resultado.coste_total = 0.0;
-      for (size_t i = 0; i + 1 < resultado.camino.size(); ++i) {
-        resultado.coste_total += g.GetPesoArista(resultado.camino[i], resultado.camino[i + 1]);
-      } 
+        if (EstaEnCamino(vecino_id, index_actual, arbol)) continue;
 
-      // Comprobamos si se detiene cuando encuentra el objetivo
-      if (opts.parar_a_primera_solucion) {
-        resultado.traza.push_back(registro);
-        return resultado;
-      } else {
-        resultado.traza.push_back(registro);
-        continue;
+        // Generar hijo y descender
+        NodoArbol hijo{vecino_id, index_actual,
+                       nodo_actual.coste_acumulado + peso,
+                       nodo_actual.profundidad + 1};
+        arbol.push_back(hijo);
+        int index_hijo = static_cast<int>(arbol.size()) - 1;
+
+        // Se añade el hijo a next_pos y stack
+        next_pos.push_back(0);
+        stack.push_back(index_hijo);
+
+        registro.generados_delta.push_back(vecino_id);
+        resultado.nodos_generados++;
+
+        genero_hijo = true;
+        break; // solo un hijo por iteración
       }
-    } 
 
-    // Expansión de vecinos
-    const auto& vecinos = g.GetVecinosPorId(nodo_actual.id);
+      if (genero_hijo) {
+        break; // cerramos la iteración con este generado
+      }
 
-    // Recorremos los vecinos
-    // vecinos.size() es size_t (unsigned). Si vecinos.size()==0, size()-1 desborda antes de convertir a int
-    // entonces, lo transformamos a un int antes de que desborde
-    for (int i = static_cast<int>(vecinos.size()) - 1; i >= 0; --i) {
-      int vecino_id = vecinos[i].first;
-      double peso = vecinos[i].second;
+      // Si este nodo no puede generar más hijos, retrocedemos y seguimos en la misma iteración
+      if (pos >= static_cast<int>(vecinos.size())) {
+        stack.pop_back();
+        continue; // intentará el padre en este mismo paso
+      }
 
-      // Comprobamos que el vecino no este ya en el camino,
-      // asi evitamos cicls en el camino actual (tree-search)
-      if (EstaEnCamino(vecino_id, index_actual, arbol)) continue;
+      // Si llegamos aquí, significa que aún quedan vecinos por probar, pero no se generó hijo
+      // (por ejemplo, todos eran ciclos). Volverá a intentar en la próxima vuelta del bucle interno.
+      }
 
-      // Creamos el nodo hijo que vamos añadir al arbol
-      NodoArbol hijo({vecino_id, index_actual, nodo_actual.coste_acumulado + peso, nodo_actual.profundidad + 1});
-      arbol.push_back(hijo);
-      // Obtenemos el indice del hijo restandole al tamaño del arbol 1, ya que los hijos se van añadiendo
-      // entonces su tamaño aumenta
-      const int index_hijo = static_cast<int>(arbol.size()) - 1;
-      
-      // Añadimos el indice del hijo a la pila
-      stack.push_back(index_hijo);  // LIFO, ultimo en entrar , primeor en salir, caracteristico del DFS
-      registro.generados_delta.push_back(vecino_id);  // En el mismo orden que se apilan
-      resultado.nodos_generados++;
+    // Registramos esta iteración solo si hubo inspecciones o generados
+    // Con esto logramos compactar las iteraciones de backtracking sin eventos
+    if (!registro.inspeccionados_delta.empty() || !registro.generados_delta.empty()) {
+      registro.paso = ++iteracion;
+      resultado.traza.push_back(std::move(registro));
+    } else {
+      // No hubo nada que registrar (pila vacía sin nuevos eventos)
+      break;
     }
-    resultado.traza.push_back(registro);
   }
   return resultado;
 }
+
+trace::ResultadoBusqueda busqueda::
